@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Usuarios de Prueba - Ideas Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    Usuarios de Prueba
+                </h1>
+                <a href="{{ url_for('ideas.dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Volver al Dashboard
+                </a>
+            </div>
+
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Información:</strong> Estos son los usuarios de prueba disponibles para probar la aplicación. 
+                Todos tienen la contraseña: <code class="text-warning">password123</code>
+            </div>
+
+            <div class="row">
+                {% for user in users %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-custom">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar-circle me-3">
+                                    {{ user.first_name[0] }}{{ user.last_name[0] }}
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1 text-light">{{ user.get_full_name() }}</h5>
+                                    <small class="text-info">{{ user.email }}</small>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-users me-1"></i>
+                                    {{ user.team.name if user.team else 'Sin equipo' }}
+                                </span>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-warning btn-sm" 
+                                        onclick="copyCredentials('{{ user.email }}', 'password123')">
+                                    <i class="fas fa-copy me-2"></i>
+                                    Copiar Credenciales
+                                </button>
+                                <button class="btn btn-primary btn-sm" 
+                                        onclick="loginWithUser('{{ user.email }}', 'password123')">
+                                    <i class="fas fa-sign-in-alt me-2"></i>
+                                    Iniciar Sesión
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-4">
+                <h4 class="mb-3 text-light">
+                    <i class="fas fa-info-circle me-2 text-warning"></i>
+                    Información de Prueba
+                </h4>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card shadow-custom">
+                            <div class="card-body">
+                                <h5 class="card-title text-warning">
+                                    <i class="fas fa-key me-2"></i>
+                                    Credenciales de Acceso
+                                </h5>
+                                <ul class="list-unstyled mb-0 text-light">
+                                    <li><strong>Email:</strong> Cualquiera de los usuarios mostrados</li>
+                                    <li><strong>Contraseña:</strong> <code class="text-warning">password123</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card shadow-custom">
+                            <div class="card-body">
+                                <h5 class="card-title text-warning">
+                                    <i class="fas fa-cogs me-2"></i>
+                                    Funcionalidades Disponibles
+                                </h5>
+                                <ul class="list-unstyled mb-0 text-light">
+                                    <li><i class="fas fa-check text-success me-2"></i>Ver todas las ideas</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Crear nuevas ideas</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Editar/eliminar ideas propias</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Unirse a equipos</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+function copyCredentials(email, password) {
+    const text = `Email: ${email}\nContraseña: ${password}`;
+    
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function() {
+            // Mostrar notificación de éxito
+            showNotification('Credenciales copiadas al portapapeles', 'success');
+        });
+    } else {
+        // Fallback para navegadores más antiguos
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showNotification('Credenciales copiadas al portapapeles', 'success');
+    }
+}
+
+function loginWithUser(email, password) {
+    // Copiar credenciales al portapapeles
+    copyCredentials(email, password);
+    
+    // Redirigir al login después de un breve delay
+    setTimeout(() => {
+        window.location.href = "{{ url_for('auth.index') }}";
+    }, 500);
+}
+
+function showNotification(message, type) {
+    // Crear elemento de notificación
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remover después de 3 segundos
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
+}
+</script>
+{% endblock %}

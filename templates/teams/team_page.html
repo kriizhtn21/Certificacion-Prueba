@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Equipos - Ideas Dashboard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-5 fw-bold text-primary">
+                <i class="fas fa-users me-3"></i>Unirse a un Equipo
+            </h1>
+            <a href="{{ url_for('ideas.dashboard') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i>Volver al Dashboard
+            </a>
+        </div>
+
+        <!-- Current Team Info -->
+        {% if user.team %}
+        <div class="alert alert-info border-0 shadow-sm mb-4">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-info-circle fa-2x me-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">Equipo Actual</h5>
+                    <p class="mb-0">Actualmente perteneces al equipo: <strong>{{ user.team.name }}</strong></p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Join Existing Team -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0 fw-bold">
+                    <i class="fas fa-user-plus me-2"></i>Unirse a un Equipo Existente
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('teams.join_team') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="team_id" class="form-label fw-semibold">Por favor selecciona un equipo:</label>
+                        <select class="form-select" id="team_id" name="team_id" required>
+                            <option value="">Selecciona un equipo...</option>
+                            {% for team in teams %}
+                            <option value="{{ team.id }}" {% if user.team and user.team.id == team.id %}selected{% endif %}>
+                                {{ team.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            La selección del equipo es requerida.
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Unirse
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="text-center my-4">
+            <span class="text-muted fw-bold">~ O ~</span>
+        </div>
+
+        <!-- Create New Team -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-success text-white">
+                <h3 class="card-title mb-0 fw-bold">
+                    <i class="fas fa-plus-circle me-2"></i>Crear un Nuevo Equipo
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('teams.create_team') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="team_name" class="form-label fw-semibold">Nombre del equipo:</label>
+                        <input type="text" class="form-control" id="team_name" name="team_name" 
+                               placeholder="Ingresa el nombre del nuevo equipo..." required>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            El nombre del equipo es requerido y debe ser único.
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-plus-circle me-2"></i>Crear
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Stretch Goal Notice -->
+        <div class="alert alert-warning border-0 shadow-sm mt-4">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-star fa-2x me-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">Característica de Extensión</h5>
+                    <p class="mb-0">Esta página es parte de las características de extensión. Los usuarios pueden unirse a equipos para colaborar en ideas específicas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

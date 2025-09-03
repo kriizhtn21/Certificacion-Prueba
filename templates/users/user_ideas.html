@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ target_user.get_full_name() }} - Ideas Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-5 fw-bold text-primary">
+                <i class="fas fa-user me-3"></i>Ideas de {{ target_user.get_full_name() }}
+            </h1>
+            <a href="{{ url_for('ideas.dashboard') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i>Volver al Dashboard
+            </a>
+        </div>
+
+        <!-- User Info -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="fw-bold text-primary mb-2">
+                            <i class="fas fa-user-circle me-2"></i>{{ target_user.get_full_name() }}
+                        </h3>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-envelope me-1"></i>{{ target_user.email }}
+                        </p>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-calendar me-1"></i>Miembro desde {{ target_user.created_at.strftime('%d/%m/%Y') }}
+                        </p>
+                        {% if target_user.team %}
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-users me-1"></i>Equipo: {{ target_user.team.name }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-user fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ideas List -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0 fw-bold">
+                    <i class="fas fa-lightbulb me-2"></i>Ideas Publicadas ({{ ideas|length }})
+                </h3>
+            </div>
+            <div class="card-body p-0">
+                {% if ideas %}
+                    {% for idea in ideas %}
+                    <div class="border-bottom p-4 {% if loop.last %}border-0{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="fw-bold text-primary me-2">
+                                        <i class="fas fa-lightbulb me-1"></i>Idea #{{ idea.id }}
+                                    </span>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ idea.created_at.strftime('%d/%m/%Y %H:%M') }}
+                                    </small>
+                                    {% if idea.updated_at != idea.created_at %}
+                                    <small class="text-muted ms-2">
+                                        <i class="fas fa-edit me-1"></i>Editada: {{ idea.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                                <p class="mb-0 fs-5 text-dark">{{ idea.content }}</p>
+                            </div>
+                            {% if idea.user_id == current_user.id %}
+                            <div class="ms-3">
+                                <a href="{{ url_for('ideas.edit_idea_form', idea_id=idea.id) }}" 
+                                   class="btn btn-outline-warning btn-sm me-2">
+                                    <i class="fas fa-edit me-1"></i>Editar
+                                </a>
+                                <a href="{{ url_for('ideas.delete_idea', idea_id=idea.id) }}" 
+                                   class="btn btn-outline-danger btn-sm"
+                                   onclick="return confirm('¿Estás seguro de que quieres eliminar esta idea?')">
+                                    <i class="fas fa-trash me-1"></i>Eliminar
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-lightbulb text-muted" style="font-size: 3rem;"></i>
+                        <h4 class="text-muted mt-3">{{ target_user.first_name }} no ha publicado ideas aún</h4>
+                        <p class="text-muted">¡Anímate a ser el primero en compartir una idea!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

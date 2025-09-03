@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Idea - Ideas Dashboard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-5 fw-bold text-primary">
+                <i class="fas fa-edit me-3"></i>Editar Mi Idea
+            </h1>
+            <a href="{{ url_for('ideas.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Volver al Dashboard
+            </a>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <form action="{{ url_for('ideas.update_idea', idea_id=idea.id) }}" method="POST" class="needs-validation" novalidate>
+                    <div class="mb-4">
+                        <label for="content" class="form-label fw-semibold">Contenido de la idea:</label>
+                        <textarea class="form-control" id="content" name="content" rows="6" required minlength="5">{{ idea.content }}</textarea>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            La idea debe tener al menos 5 caracteres.
+                        </div>
+                        <div class="invalid-feedback">
+                            La idea debe tener al menos 5 caracteres.
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save me-2"></i>Guardar Cambios
+                        </button>
+                        <a href="{{ url_for('ideas.dashboard') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-times me-2"></i>Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Idea Info -->
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-body p-3">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Autor</small>
+                        <strong>{{ idea.author.get_full_name() }}</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Creada</small>
+                        <strong>{{ idea.created_at.strftime('%d/%m/%Y %H:%M') }}</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Última actualización</small>
+                        <strong>{{ idea.updated_at.strftime('%d/%m/%Y %H:%M') }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

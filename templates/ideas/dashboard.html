@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Ideas Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-5 fw-bold text-gradient">
+                <i class="fas fa-tachometer-alt me-3 text-warning"></i>Dashboard de Ideas
+            </h1>
+            <div>
+                <a href="{{ url_for('teams.team_page') }}" class="btn btn-outline-warning me-2">
+                    <i class="fas fa-users me-1"></i>Unirse a un Equipo
+                </a>
+                <a href="{{ url_for('admin.test_users') }}" class="btn btn-outline-info">
+                    <i class="fas fa-user-friends me-1"></i>Usuarios de Prueba
+                </a>
+            </div>
+        </div>
+
+        <!-- Add Idea Section -->
+        <div class="card shadow-custom mb-4">
+            <div class="card-body p-4">
+                <h3 class="card-title fw-bold text-warning mb-3">
+                    <i class="fas fa-plus-circle me-2"></i>Agregar Nueva Idea
+                </h3>
+                <form action="{{ url_for('ideas.add_idea') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="content" class="form-label fw-semibold text-light">Por favor ingresa una idea:</label>
+                        <textarea class="form-control" id="content" name="content" rows="4" 
+                                  placeholder="Describe tu idea innovadora aquí..." required minlength="5"></textarea>
+                        <div class="form-text text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            La idea debe tener al menos 5 caracteres.
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Agregar Tu Idea
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Ideas List -->
+        <div class="card shadow-custom">
+            <div class="card-header bg-dark border-bottom border-secondary">
+                <h3 class="card-title mb-0 fw-bold text-warning">
+                    <i class="fas fa-lightbulb me-2"></i>Todas las Ideas
+                </h3>
+            </div>
+            <div class="card-body p-0">
+                {% if ideas %}
+                    {% for idea in ideas %}
+                    <div class="idea-item p-4 {% if loop.last %}border-0{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <a href="{{ url_for('users.user_ideas', user_id=idea.author.id) }}" 
+                                       class="text-decoration-none fw-bold text-warning me-2">
+                                        <i class="fas fa-user me-1"></i>{{ idea.author.first_name }} dice:
+                                    </a>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ idea.created_at.strftime('%d/%m/%Y %H:%M') }}
+                                    </small>
+                                </div>
+                                <p class="mb-0 fs-5 text-light">{{ idea.content }}</p>
+                            </div>
+                            {% if idea.user_id == user.id %}
+                            <div class="ms-3">
+                                <a href="{{ url_for('ideas.edit_idea_form', idea_id=idea.id) }}" 
+                                   class="btn btn-outline-warning btn-sm me-2">
+                                    <i class="fas fa-edit me-1"></i>Editar
+                                </a>
+                                <a href="{{ url_for('ideas.delete_idea', idea_id=idea.id) }}" 
+                                   class="btn btn-outline-danger btn-sm"
+                                   onclick="return confirm('¿Estás seguro de que quieres eliminar esta idea?')">
+                                    <i class="fas fa-trash me-1"></i>Eliminar
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-lightbulb text-muted" style="font-size: 3rem;"></i>
+                        <h4 class="text-muted mt-3">No hay ideas aún</h4>
+                        <p class="text-muted">¡Sé el primero en compartir una idea innovadora!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
